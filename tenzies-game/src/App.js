@@ -8,7 +8,18 @@ function App() {
   const [dice, setDice] = useState(newDieNums())
   const [tenzies, setTenzies] = useState(false)
   const [rollCount, setRollCount] = useState(0)
-  const [lowestScore, setLowestScore] = useState([])
+  const [lowestScore, setLowestScore] = useState(
+    () => JSON.parse(localStorage.getItem("score")) || []
+  )
+  // const score=lowestScore[1]
+
+  React.useEffect(() => {
+    localStorage.setItem("score", JSON.stringify(lowestScore))
+    // const scores = JSON.parse(localStorage.getItem("score")).sort()
+    // scores = scores.sort()
+    //  console.log(lowestScore)
+  //   setLowestScore(scores)
+  }, [lowestScore])
 
   React.useEffect(() => {
 
@@ -52,9 +63,9 @@ function App() {
   }
 
   function newGame() {
-    setLowestScore(prevScores => prevScores.push(rollCount))
-    localStorage.setItem("score", JSON.stringify(lowestScore))
-    console.log(lowestScore)
+    setLowestScore(prevScores => ([rollCount, ...prevScores]))
+    // console.log(lowestScore)
+    // setLowestScore(score => score.sort())
     setDice(newDieNums())
     setTenzies(false)
     setRollCount(0)
@@ -75,7 +86,8 @@ function App() {
       <h1 className="title">Tenzies</h1>
       <p className="instructions">Roll until all dice are the same. Click each die to freeze it at its current value between rolls.</p>
       <h3 className="roll-counter">Rolls: {rollCount}</h3>
-      <h3 className="low-roll-score">Lowest Score: {rollCount}</h3>
+      <h3 className="low-roll-score">Lowest Score: {lowestScore.length === 0 ? 0 : Math.min.apply(Math, lowestScore)}
+      </h3>
       <div className="container-sm die-grid">
           {diceElements}
       </div>
